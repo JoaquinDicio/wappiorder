@@ -4,14 +4,14 @@ import { SignUpDTO } from "../types/auth.interface.js";
 
 const authService = {
   async createNewUser(userData: SignUpDTO) {
+
     const { data, error } = await supabase
       .from("users")
       .insert(userData)
       .select();
 
     if (error) {
-      console.log(error.code);
-      throw new HttpError(500, false, error.message);
+      throw new HttpError(500, error.message, error);
     }
 
     return data;

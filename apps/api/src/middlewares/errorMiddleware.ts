@@ -7,10 +7,12 @@ function errorMiddleware(
   res: Response,
   next: NextFunction
 ) {
+
   if (error instanceof HttpError) {
     res.status(error.code).json({ ...error, message: error.message });
   } else {
     res.status(500).json(error);
+    console.log(error)
   }
 }
 
