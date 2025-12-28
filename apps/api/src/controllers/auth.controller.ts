@@ -1,12 +1,12 @@
 import { Request, Response } from "express";
 import authService from "../services/auth.service.js";
-import { SignUpDTO } from "../types/auth.interface.js";
+import { LoginDTO, SignUpDTO } from "../types/auth.interface.js";
 import checkMissingFields from "../utils/checkMissingFields.js";
 import HttpError from "../errors/httpError.js";
 
 const authController = {
 
-  async createNewUser(req: Request, res: Response) {
+  async signup(req: Request, res: Response) {
 
     const signupData: SignUpDTO = req.body;
 
@@ -18,11 +18,28 @@ const authController = {
 
     // if all the required fields are present, makes the request to db
 
-    const response = await authService.createNewUser(signupData);
+    const response = await authService.signup(signupData);
 
     res.status(200).json(response);
 
   },
+
+  async login(req: Request, res: Response) {
+
+    const loginData: LoginDTO = req.body
+
+    const REQUIRED: (keyof LoginDTO)[] = ['password', 'email']
+
+    const error = checkMissingFields(REQUIRED, loginData)
+
+    if (Object.keys(error).length > 0) throw new HttpError(400, 'Hay campos faltantes', error)
+
+    const response = await authService.login(loginData) // returns a token if a user matches credentials
+
+    if (!response) throw new HttpError(400, 'Credenciales inválidas')
+
+    res.status(200).json(response)
+  }
 
 };
 
