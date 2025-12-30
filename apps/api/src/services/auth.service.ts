@@ -1,16 +1,27 @@
 import supabase from "../db/supabase.js";
 import HttpError from "../errors/httpError.js";
 import { LoginDTO, SignUpDTO } from "../types/auth.interface.js";
+import normalizeSignupPayload from "../utils/normalizeSignupPayload.js";
+import verifyExistence from "../utils/verifyExistence.js";
 
 const authService = {
-  async signup(userData: SignUpDTO) {
-
+  async signup(signupPayload: SignUpDTO) {
     //TODO -> hash passwords to make it more secure
-    //TODO -> not being able to signup if email is already registered
+    const normalizedPayload = normalizeSignupPayload(signupPayload);
+    const { email } = normalizedPayload;
 
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      throw new HttpError(400, "Email inválido");
+    }
+
+    const existence = await verifyExistence(email);
+    if (existence) throw new HttpError(400, "El email ya se encuentra en uso.");
+
+    //if passed all the validations, atempts to create the user
     const { data, error } = await supabase
       .from("users")
-      .insert(userData)
+      .insert(signupPayload)
       .select();
 
     if (error) {
@@ -21,28 +32,25 @@ const authService = {
   },
 
   async login(loginPayload: LoginDTO) {
-
     const { data, error } = await supabase
-      .from('users')
-      .select('email, password')
-      .eq('email', loginPayload.email);
+      .from("users")
+      .select("email, password")
+      .eq("email", loginPayload.email);
 
     if (error) {
-      throw new HttpError(500, error.message, error)
+      throw new HttpError(500, error.message, error);
     }
 
     //valdiates user password and return token
     if (data[0]) {
-      const { password } = data[0]
-      const isValid = password.trim() === loginPayload.password.trim()
-      return isValid ? { token: "tokenfalso" } : null
+      const { password } = data[0];
+      const isValid = password.trim() === loginPayload.password.trim();
+      return isValid ? { token: "tokenfalso" } : null;
     }
 
     // if there is no user we reach this point
-    return null
-  }
-
-
+    return null;
+  },
 };
 
 export default authService;
