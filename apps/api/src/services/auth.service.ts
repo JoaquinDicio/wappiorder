@@ -2,26 +2,23 @@ import supabase from "../db/supabase.js";
 import HttpError from "../errors/httpError.js";
 import { LoginDTO, SignUpDTO } from "../types/auth.interface.js";
 import normalizeSignupPayload from "../utils/normalizeSignupPayload.js";
+import validateEmailAndPassword from "../utils/validateEmailAndPassword.js";
 import verifyExistence from "../utils/verifyExistence.js";
 
 const authService = {
   async signup(signupPayload: SignUpDTO) {
     //TODO -> hash passwords to make it more secure
     const normalizedPayload = normalizeSignupPayload(signupPayload);
-    const { email } = normalizedPayload;
-
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-      throw new HttpError(400, "Email inválido");
-    }
+    const { email, password } = normalizedPayload;
+    validateEmailAndPassword(email, password);
 
     const existence = await verifyExistence(email);
     if (existence) throw new HttpError(400, "El email ya se encuentra en uso.");
 
-    //if passed all the validations, atempts to create the user
+    //if passed all validations, atempts to create the user
     const { data, error } = await supabase
       .from("users")
-      .insert(signupPayload)
+      .insert(normalizedPayload)
       .select();
 
     if (error) {
