@@ -36,7 +36,7 @@ const authController = {
 
     const response = await authService.login(loginData) // returns a token if a user matches credentials
 
-    if (!response) throw new HttpError(400, 'Credenciales inválidas')
+    if (!response) throw new HttpError(401, 'Credenciales inválidas')
 
     res.status(200).json(response)
   }
