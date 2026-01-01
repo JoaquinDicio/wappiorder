@@ -3,6 +3,8 @@ import express from "express";
 import cors from "cors";
 import authRouter from "./routes/auth.routes.js";
 import errorMiddleware from "./middlewares/errorMiddleware.js";
+import ordersRouter from "./routes/orders.routes.js";
+import authMiddleware from "./middlewares/authMiddleware.js";
 
 const app = express();
 
@@ -17,5 +19,7 @@ app.listen(PORT, () => {
 });
 
 app.use("/auth", authRouter);
+
+app.use('/orders', authMiddleware, ordersRouter)
 
 app.use(errorMiddleware);
