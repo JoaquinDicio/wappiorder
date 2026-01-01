@@ -5,6 +5,7 @@ import { LoginDTO, SignUpDTO } from "../types/auth.interface.js";
 import normalizeSignupPayload from "../utils/normalizeSignupPayload.js";
 import validateEmailAndPassword from "../utils/validateEmailAndPassword.js";
 import verifyExistence from "../utils/verifyExistence.js";
+import jwt from 'jsonwebtoken'
 
 const authService = {
   async signup(signupPayload: SignUpDTO) {
@@ -35,27 +36,28 @@ const authService = {
 
   async login(loginPayload: LoginDTO) {
 
-    //get users from the db
     const { data, error } = await supabase
       .from("users")
-      .select("email, password")
+      .select("email, password, id")
       .eq("email", loginPayload.email)
       .single()
 
-    if (error) {
-      throw new HttpError(500, error.message, error);
-    }
+    if (error || !data) throw new HttpError(401, 'Credenciales inválidas', error) // we dont reveal if user exists or not
 
-    if (data) {
-      const { password } = data;
+    const { password, id } = data;
 
-      const isValid = await bcrypt.compare(loginPayload.password, password)
+    const isValid = await bcrypt.compare(loginPayload.password, password)
 
-      return isValid ? { token: "tokenfalso" } : null;
-    }
+    if (!isValid) throw new HttpError(401, 'Credenciales inválidas', error)
 
-    return null;
-  },
+    const secret = process.env.JWT_SECRET || "super_secret"
+
+    const userToken = jwt.sign({ userId: id }, secret)
+
+    return { token: userToken }
+
+  }
+
 };
 
 export default authService;
