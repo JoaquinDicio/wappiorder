@@ -2,6 +2,10 @@ import { NextFunction, Request, Response } from 'express'
 import jwt from 'jsonwebtoken'
 import HttpError from '../errors/httpError.js';
 
+interface JWTPayload {
+    userId: string
+}
+
 function authMiddleware(req: Request, res: Response, next: NextFunction) {
 
     const token = req.headers['authorization'];
@@ -10,7 +14,11 @@ function authMiddleware(req: Request, res: Response, next: NextFunction) {
 
     try {
 
-        jwt.verify(token, process.env.JWT_SECRET || "secret")
+        const decoded = jwt.verify(token, process.env.JWT_SECRET || "secret") as JWTPayload
+
+        req.user = {
+            id: decoded.userId,
+        };
 
     } catch (error) {
 

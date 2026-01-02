@@ -1,19 +1,31 @@
 import { Response, Request } from "express"
+import ordersService from "../services/orders.service.js";
 
 const ordersController = {
 
     async getOrders(req: Request, res: Response) {
-        res.status(200).send({ orders: [] })
+
+        const response = await ordersService.getOrders()
+
     },
 
     async newOrder(req: Request, res: Response) {
+
         const { newOrder } = req.body;
-        res.status(200).json({ created: newOrder })
+
+        const userId = req.user?.id
+
+        const response = await ordersService.createNewOrder({ ...newOrder, userId })
+
+        res.status(200).json(response)
     },
 
     async deleteOrder(req: Request, res: Response) {
+
         const { orderId } = req.body
+
         res.status(201).json({ delted: orderId })
+
     }
 
 }
