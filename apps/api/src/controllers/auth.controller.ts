@@ -10,7 +10,7 @@ const authController = {
 
     const signupData: SignUpDTO = req.body;
 
-    const REQUIRED: (keyof SignUpDTO)[] = ['password', 'email', 'phone']
+    const REQUIRED: (keyof SignUpDTO)[] = ['password', 'email', 'phone', 'name']
 
     const error = checkMissingFields(REQUIRED, signupData)
 

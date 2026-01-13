@@ -2,6 +2,7 @@ export interface SignUpDTO {
   phone: string;
   email: string;
   password: string;
+  name: string,
 }
 
 export interface LoginDTO {

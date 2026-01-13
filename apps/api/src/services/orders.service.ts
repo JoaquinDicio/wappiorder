@@ -1,19 +1,23 @@
-import { OrderDTO } from "../types/order.interface.js"
-import checkMissingFields from "../utils/checkMissingFields.js"
+import newOrderDTO from "../types/order.interface.js"
 import HttpError from "../errors/httpError.js"
+import supabase from "../db/supabase.js"
 
 const ordersService = {
 
-    async createNewOrder(newOrder: OrderDTO) {
+    async createNewOrder(newOrder: newOrderDTO) {
 
-        const REQUIRED: (keyof OrderDTO)[] = ["client_phone", "client_name", "payment_method"]
+        newOrder.state = "En preparacion"
 
-        const error = checkMissingFields(REQUIRED, newOrder)
+        const { data, error } = await supabase
+            .from("orders")
+            .insert(newOrder)
+            .select();
 
-        if (Object.keys(error).length > 0) throw new HttpError(400, 'Hay campos faltantes', error)
+        if (error) {
+            throw new HttpError(500, error.message, error)
+        }
 
-
-
+        return data
     },
 
     async deleteOrder() {

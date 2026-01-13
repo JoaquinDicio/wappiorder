@@ -1,5 +1,8 @@
 import { Response, Request } from "express"
 import ordersService from "../services/orders.service.js";
+import newOrderDTO from "../types/order.interface.js";
+import HttpError from "../errors/httpError.js";
+import checkMissingFields from "../utils/checkMissingFields.js";
 
 const ordersController = {
 
@@ -11,11 +14,17 @@ const ordersController = {
 
     async newOrder(req: Request, res: Response) {
 
-        const { newOrder } = req.body;
+        const newOrder: newOrderDTO = req.body;
 
-        const userId = req.user?.id
+        newOrder.storeId = req.params.storeId || "" // atach storeId to the newOrder object
 
-        const response = await ordersService.createNewOrder({ ...newOrder, userId })
+        const REQUIRED: (keyof newOrderDTO)[] = ["clientPhone", "clientName", "paymentMethod", "storeId"]
+
+        const error = checkMissingFields(REQUIRED, newOrder)
+
+        if (Object.keys(error).length > 0) throw new HttpError(400, 'Hay campos faltantes', error)
+
+        const response = await ordersService.createNewOrder(newOrder)
 
         res.status(200).json(response)
     },

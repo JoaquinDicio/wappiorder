@@ -1,6 +1,9 @@
-export interface OrderDTO {
-    store_id: string,
-    client_phone: string,
-    client_name: string,
-    payment_method: 'Efectivo' | 'Tarjeta' | 'Mercadopago'
+interface newOrderDTO {
+    storeId: string, // this is the store owner userId
+    clientPhone: string,
+    clientName: string,
+    paymentMethod: 'Efectivo' | 'Transferencia',
+    state: 'Completada' | 'En preparacion' | 'Pendiente de Pago'
 }
+
+export default newOrderDTO

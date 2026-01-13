@@ -5,8 +5,8 @@ const ordersRouter = Router()
 
 ordersRouter.get("", ordersController.getOrders);
 
-ordersRouter.post("", ordersController.newOrder)
+ordersRouter.post("/new/:storeId", ordersController.newOrder)
 
-ordersRouter.delete("", ordersController.deleteOrder)
+ordersRouter.delete("/:orderId", ordersController.deleteOrder)
 
 export default ordersRouter

@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from 'express'
-import jwt from 'jsonwebtoken'
+import jwt, { decode } from 'jsonwebtoken'
 import HttpError from '../errors/httpError.js';
 
 interface JWTPayload {
