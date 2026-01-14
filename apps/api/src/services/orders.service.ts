@@ -13,9 +13,7 @@ const ordersService = {
             .insert(newOrder)
             .select();
 
-        if (error) {
-            throw new HttpError(500, error.message, error)
-        }
+        if (error) throw new HttpError(500, error.message, error)
 
         return data
     },
@@ -24,8 +22,16 @@ const ordersService = {
         return
     },
 
-    async getOrders() {
-        return
+    async getOrders(userId: string) {
+
+        const { data, error } = await supabase
+            .from("orders")
+            .select("clientPhone,clientName,paymentMethod,state")
+            .eq("storeId", userId.trim());
+
+        if (error) throw new HttpError(500, error.message, error)
+
+        return data
     }
 
 }

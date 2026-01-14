@@ -3,7 +3,7 @@ import ordersController from '../controllers/orders.controller.js'
 
 const ordersRouter = Router()
 
-ordersRouter.get("", ordersController.getOrders);
+ordersRouter.get("/", ordersController.getOrders);
 
 ordersRouter.post("/new/:storeId", ordersController.newOrder)
 

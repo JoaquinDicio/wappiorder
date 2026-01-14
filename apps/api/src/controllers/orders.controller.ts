@@ -8,8 +8,13 @@ const ordersController = {
 
     async getOrders(req: Request, res: Response) {
 
-        const response = await ordersService.getOrders()
+        const userId: string = req.user?.id || ""
 
+        if (!userId) throw new HttpError(401, 'Debes autenticarte para ver los pedidos pendientes.')
+
+        const response = await ordersService.getOrders(userId)
+
+        res.status(200).json(response)
     },
 
     async newOrder(req: Request, res: Response) {
