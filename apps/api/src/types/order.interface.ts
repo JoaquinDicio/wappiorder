@@ -3,7 +3,9 @@ interface newOrderDTO {
     clientPhone: string,
     clientName: string,
     paymentMethod: 'Efectivo' | 'Transferencia',
-    state: 'Completada' | 'En preparacion' | 'Pendiente de Pago'
+    state: OrderState
 }
+
+type OrderState = 'Completada' | 'En preparacion' | 'Pendiente de Pago' | "Preparada"
 
 export default newOrderDTO

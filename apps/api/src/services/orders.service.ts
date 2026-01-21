@@ -2,6 +2,8 @@ import newOrderDTO from "../types/order.interface.js"
 import HttpError from "../errors/httpError.js"
 import supabase from "../db/supabase.js"
 
+type OrderState = 'Completada' | 'En preparacion' | 'Pendiente de Pago' | "Preparada" | "Cancelada"
+
 const ordersService = {
 
     async createNewOrder(newOrder: newOrderDTO) {
@@ -18,8 +20,9 @@ const ordersService = {
         return data
     },
 
-    async deleteOrder() {
-        return
+    async updateOrderState(newState: OrderState){
+        const orderState : OrderState[] = ['Completada' ,'En preparacion' ,'Pendiente de Pago' , "Preparada", "Cancelada"]
+        return 
     },
 
     async getOrders(userId: string) {
