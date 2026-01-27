@@ -20,9 +20,24 @@ const ordersService = {
         return data
     },
 
-    async updateOrderState(newState: OrderState){
-        const orderState : OrderState[] = ['Completada' ,'En preparacion' ,'Pendiente de Pago' , "Preparada", "Cancelada"]
-        return 
+    async updateOrderState(orderId: string, newState: OrderState) {
+
+        // TODO -> needs to compare store_id from JWT against order one
+
+        const values = ['Completada', 'En preparacion', 'Pendiente de Pago', "Preparada"]
+
+        if (!values.includes(newState)) {
+            throw new HttpError(400, 'Specified state is not allowed', { values })
+        }
+
+        const { error } = await supabase
+            .from('orders')
+            .update({ state: newState })
+            .eq('order_id', orderId)
+
+        if (error) throw new HttpError(500, error.message, error)
+
+        return { ok: true }
     },
 
     async getOrders(userId: string) {

@@ -34,13 +34,17 @@ const ordersController = {
         res.status(200).json(response)
     },
 
-    async deleteOrder(req: Request, res: Response) {
+    async updateOrderState(req: Request, res: Response) {
 
-        const { orderId } = req.body
+        const orderId = req.params.orderId
+        const state = req.body.state
 
-        res.status(201).json({ delted: orderId })
+        if (!orderId || !state) throw new HttpError(400, 'State and orderId are mandatory') 
 
-    }
+        const response = await ordersService.updateOrderState(orderId, state)
+
+        res.status(200).json(response)
+    }   
 
 }
 

@@ -7,6 +7,6 @@ ordersRouter.get("/", ordersController.getOrders);
 
 ordersRouter.post("/new/:storeId", ordersController.newOrder)
 
-ordersRouter.delete("/:orderId", ordersController.deleteOrder)
+ordersRouter.put("/:orderId", ordersController.updateOrderState)
 
 export default ordersRouter
