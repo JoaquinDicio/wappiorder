@@ -1,14 +1,13 @@
 import newOrderDTO from "../types/order.interface.js"
 import HttpError from "../errors/httpError.js"
 import supabase from "../db/supabase.js"
-
-type OrderState = 'Completada' | 'En preparacion' | 'Pendiente de Pago' | "Preparada" | "Cancelada"
+import { ORDER_STATES, OrderStateKey } from "../consts/orderStates.js"
 
 const ordersService = {
 
     async createNewOrder(newOrder: newOrderDTO) {
 
-        newOrder.state = "En preparacion"
+        newOrder.state = ORDER_STATES.PREPARING
 
         const { data, error } = await supabase
             .from("orders")
@@ -20,24 +19,20 @@ const ordersService = {
         return data
     },
 
-    async updateOrderState(orderId: string, newState: OrderState, user: { id: string }) {
+    async updateOrderState(orderId: string, newState: OrderStateKey, user: { id: string }) {
 
-        const values = ['Completada', 'En preparacion', 'Pendiente de Pago', "Preparada"]
-
-        if (!values.includes(newState)) {
-            throw new HttpError(400, 'Specified state is not allowed', { values })
-        }
+        if (!ORDER_STATES[newState]) throw new HttpError(400, 'El estado especificado no existe.')
 
         const { data, error } = await supabase
             .from('orders')
-            .update({ state: newState })
+            .update({ state: ORDER_STATES[newState] })
             .eq('order_id', orderId)
-            .eq('store_id', user.id)
+            .eq('store_id', user.id) // the 'owner' is the one who updates order state. Other way anyone with the ID could do it
             .select()
-        //.eq('store_id', user.id) // the 'owner' is the one who updates order state. Other way anyone with the ID could do it
-
 
         if (error) throw new HttpError(500, error.message, error)
+
+        if (data.length < 1) throw new HttpError(403, 'No tienes permisos para modificar esta orden.')
 
         return { data }
     },
@@ -47,7 +42,7 @@ const ordersService = {
         const { data, error } = await supabase
             .from("orders")
             .select("clientPhone,clientName,paymentMethod,state")
-            .eq("storeId", userId.trim());
+            .eq("store_id", userId.trim());
 
         if (error) throw new HttpError(500, error.message, error)
 
