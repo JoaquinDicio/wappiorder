@@ -5,6 +5,7 @@ import authRouter from "./routes/auth.routes.js";
 import errorMiddleware from "./middlewares/errorMiddleware.js";
 import ordersRouter from "./routes/orders.routes.js";
 import authMiddleware from "./middlewares/authMiddleware.js";
+import itemsRouter from "./routes/items.routes.js";
 
 const app = express();
 
@@ -21,5 +22,7 @@ app.listen(PORT, () => {
 app.use("/auth", authRouter);
 
 app.use('/orders', authMiddleware, ordersRouter)
+
+app.use('/items', itemsRouter)
 
 app.use(errorMiddleware);
