@@ -39,12 +39,12 @@ const ordersController = {
         const orderId = req.params.orderId
         const state = req.body.state
 
-        if (!orderId || !state) throw new HttpError(400, 'State and orderId are mandatory') 
+        if (!orderId || !state || !req.user) throw new HttpError(400, 'State and orderId are mandatory')
 
-        const response = await ordersService.updateOrderState(orderId, state)
+        const response = await ordersService.updateOrderState(orderId, state, req.user)
 
         res.status(200).json(response)
-    }   
+    }
 
 }
 

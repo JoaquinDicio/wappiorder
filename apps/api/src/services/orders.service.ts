@@ -20,9 +20,7 @@ const ordersService = {
         return data
     },
 
-    async updateOrderState(orderId: string, newState: OrderState) {
-
-        // TODO -> needs to compare store_id from JWT against order one
+    async updateOrderState(orderId: string, newState: OrderState, user: { id: string }) {
 
         const values = ['Completada', 'En preparacion', 'Pendiente de Pago', "Preparada"]
 
@@ -30,14 +28,18 @@ const ordersService = {
             throw new HttpError(400, 'Specified state is not allowed', { values })
         }
 
-        const { error } = await supabase
+        const { data, error } = await supabase
             .from('orders')
             .update({ state: newState })
             .eq('order_id', orderId)
+            .eq('store_id', user.id)
+            .select()
+        //.eq('store_id', user.id) // the 'owner' is the one who updates order state. Other way anyone with the ID could do it
+
 
         if (error) throw new HttpError(500, error.message, error)
 
-        return { ok: true }
+        return { data }
     },
 
     async getOrders(userId: string) {
