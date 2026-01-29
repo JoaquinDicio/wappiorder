@@ -1,10 +1,8 @@
-interface Item {
-    id: string,
+interface ItemDTO {
     userId: string, 
     name: string, 
-    price:number, 
-    img_url: string, 
+    price: number, 
     description: string
 }
 
-export default Item
+export default ItemDTO

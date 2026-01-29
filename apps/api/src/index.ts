@@ -21,7 +21,7 @@ app.listen(PORT, () => {
 
 app.use("/auth", authRouter);
 
-app.use('/orders', authMiddleware, ordersRouter)
+app.use('/orders', ordersRouter)
 
 app.use('/items', itemsRouter)
 

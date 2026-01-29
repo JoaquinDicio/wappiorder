@@ -8,7 +8,7 @@ const ordersController = {
 
     async getOrders(req: Request, res: Response) {
 
-        const userId: string = req.user?.id || ""
+        const userId = req.user?.id
 
         if (!userId) throw new HttpError(401, 'Debes autenticarte para ver los pedidos pendientes.')
 
@@ -37,6 +37,7 @@ const ordersController = {
     async updateOrderState(req: Request, res: Response) {
 
         const orderId = req.params.orderId
+
         const state = req.body.state
 
         if (!orderId || !state || !req.user) throw new HttpError(400, 'State and orderId are mandatory')
