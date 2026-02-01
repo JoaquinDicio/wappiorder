@@ -32,7 +32,7 @@ const ordersService = {
 
         if (error) throw new HttpError(500, error.message, error)
 
-        if (data.length < 1) throw new HttpError(403, 'No tienes permisos para modificar esta orden.')
+        if (data.length === 0) throw new HttpError(404, 'No se ha encontrado ninguna orden perteneciente al usuario.')
 
         return { data }
     },

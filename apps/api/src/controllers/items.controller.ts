@@ -1,5 +1,4 @@
 import { Request, response, Response } from 'express'
-import Item from '../types/item.interface.js'
 import checkMissingFields from '../utils/checkMissingFields.js'
 import HttpError from '../errors/httpError.js'
 import itemsService from '../services/items.service.js'
@@ -19,7 +18,17 @@ const itemsController = {
     },
 
     async deleteItem (req: Request, res: Response) {
-        res.status(200).json({msg:"Endpoint is working"})
+        const itemId = req.params.itemId
+
+        const userId = req.user?.id
+
+        if (!itemId) throw new HttpError(400, 'Debe especificar un itemId')
+
+        if (!userId) throw new HttpError(401, 'No autenticado')
+
+        const response = await itemsService.deleteItem(itemId, userId)
+
+        res.status(200).json({ response })
     },
 
     async createItem (req:Request, res: Response) {

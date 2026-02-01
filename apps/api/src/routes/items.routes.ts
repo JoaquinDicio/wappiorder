@@ -6,7 +6,7 @@ const itemsRouter = Router()
 
 itemsRouter.get('/', itemsController.getItems)
 
-itemsRouter.delete('/',authMiddleware, itemsController.deleteItem)
+itemsRouter.delete('/:itemId', authMiddleware, itemsController.deleteItem)
 
 itemsRouter.post('/',authMiddleware, itemsController.createItem)
 
