@@ -8,9 +8,7 @@ const ordersController = {
 
     async getOrders(req: Request, res: Response) {
 
-        const userId = req.user?.id
-
-        if (!userId) throw new HttpError(401, 'Debes autenticarte para ver los pedidos pendientes.')
+        const userId = req.user!.id
 
         const response = await ordersService.getOrders(userId)
 
@@ -21,7 +19,9 @@ const ordersController = {
 
         const newOrder: newOrderDTO = req.body;
 
-        newOrder.storeId = req.params.storeId || "" // atach storeId to the newOrder object
+        const { storeId } = req.params as { storeId: string }
+
+        newOrder.storeId = storeId // atach storeId to the newOrder object
 
         const REQUIRED: (keyof newOrderDTO)[] = ["clientPhone", "clientName", "paymentMethod", "storeId"]
 
@@ -36,13 +36,15 @@ const ordersController = {
 
     async updateOrderState(req: Request, res: Response) {
 
-        const orderId = req.params.orderId
+        const { orderId } = req.params as { orderId: string }
+
+        const userId = req.user!.id
 
         const state = req.body.state
 
-        if (!orderId || !state || !req.user) throw new HttpError(400, 'State and orderId are mandatory')
+        if (state?.trim() === "" || !state) throw new HttpError(400, 'State and orderId are mandatory')
 
-        const response = await ordersService.updateOrderState(orderId, state, req.user)
+        const response = await ordersService.updateOrderState(orderId, state, userId)
 
         res.status(200).json(response)
     }

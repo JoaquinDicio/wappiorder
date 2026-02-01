@@ -2,14 +2,7 @@ import { Request, response, Response } from 'express'
 import checkMissingFields from '../utils/checkMissingFields.js'
 import HttpError from '../errors/httpError.js'
 import itemsService from '../services/items.service.js'
-
-interface ItemDTO {
-    userId: string,
-    name: string,
-    price: number,
-    img_url: string,
-    description: string
-}
+import ItemDTO from '../types/item.interface.js'
 
 const itemsController = {
     
@@ -17,29 +10,22 @@ const itemsController = {
         res.status(200).json({msg:"Endpoint is working"})
     },
 
-    async deleteItem (req: Request, res: Response) {
-        const itemId = req.params.itemId
+    async deleteItem(req: Request, res: Response) {
 
-        const userId = req.user?.id
+        const { itemId } = req.params as { itemId: string }
 
-        if (!itemId) throw new HttpError(400, 'Debe especificar un itemId')
-
-        if (!userId) throw new HttpError(401, 'No autenticado')
+        const userId = req.user!.id
 
         const response = await itemsService.deleteItem(itemId, userId)
 
-        res.status(200).json({ response })
+        res.status(200).json(response)
     },
 
     async createItem (req:Request, res: Response) {
 
         const newItem: ItemDTO = req.body
 
-        const userId = req.user?.id
-
-        if (!userId) {
-            throw new HttpError(401, 'No autenticado');
-        }
+        const userId = req.user!.id
 
         const REQUIRED: (keyof ItemDTO)[] = ['name', 'price', 'description']
 
@@ -49,7 +35,7 @@ const itemsController = {
 
         const response = await itemsService.createItem(newItem, userId)
 
-        res.status(200).json({ response })
+        res.status(200).json(response)
     },
 
     async updateItem (req:Request, res:Response){

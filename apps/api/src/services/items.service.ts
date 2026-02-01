@@ -31,7 +31,7 @@ const itemsService = {
 
         if (data.length == 0) throw new HttpError(404, 'No se ha encontrado ningun item perteneciente al usuario.')
 
-        return data
+        return { deleted: true }
     },
 
     async updateItem(itemId: string, userId: string) { },

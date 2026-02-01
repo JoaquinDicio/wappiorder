@@ -1,7 +1,8 @@
 interface ItemDTO {
-    userId: string, 
-    name: string, 
-    price: number, 
+    userId: string,
+    name: string,
+    price: number,
+    img_url: string,
     description: string
 }
 
