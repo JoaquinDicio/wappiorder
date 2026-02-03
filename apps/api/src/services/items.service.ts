@@ -27,7 +27,7 @@ const itemsService = {
             .eq('item_id', itemId)
             .select()
 
-        if (error) throw new HttpError(500, 'Ha ocurrido un error borrando el articulo.', error)
+        if (error) throw new HttpError(500, error.message, error)
 
         if (data.length == 0) throw new HttpError(404, 'No se ha encontrado ningun item perteneciente al usuario.')
 
@@ -36,7 +36,17 @@ const itemsService = {
 
     async updateItem(itemId: string, userId: string) { },
 
-    async getItems(storeId: string) { }
+    async getItems(storeId: string) {
+
+        const { data, error } = await supabase
+            .from('items')
+            .select()
+            .eq('user_id', storeId)
+
+        if (error) throw new HttpError(500, error.message, error)
+
+        return data
+    }
 
 }
 

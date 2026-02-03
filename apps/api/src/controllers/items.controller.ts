@@ -7,7 +7,12 @@ import ItemDTO from '../types/item.interface.js'
 const itemsController = {
     
     async getItems (req: Request, res: Response) {
-        res.status(200).json({msg:"Endpoint is working"})
+
+        const { userId } = req.params as { userId: string }
+
+        const response = await itemsService.getItems(userId)
+
+        res.status(200).json(response)
     },
 
     async deleteItem(req: Request, res: Response) {

@@ -4,7 +4,7 @@ import authMiddleware from "../middlewares/authMiddleware.js";
 
 const itemsRouter = Router()
 
-itemsRouter.get('/', itemsController.getItems)
+itemsRouter.get('/:userId', itemsController.getItems)
 
 itemsRouter.delete('/:itemId', authMiddleware, itemsController.deleteItem)
 
