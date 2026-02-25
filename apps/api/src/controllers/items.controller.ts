@@ -43,15 +43,30 @@ const itemsController = {
         res.status(200).json(response)
     },
 
-    async updateItem (req:Request, res:Response){
+    async updateItem(req: Request, res: Response) {
 
         const { newItemData } = req.body
 
+        // CASE-> invalid newItemData
+        if (!newItemData || typeof newItemData !== "object")
+            throw new HttpError(400, "Datos inválidos")
+
+        const itemId = req.params.id
+
+        // CASE-> invalid itemId
+        if (!itemId)
+            throw new HttpError(400, "itemId requerido")
+
         const userId = req.user!.id
 
-        //TODO-> ADD SOME VALIDATIONS TO THIS.
+        // CASE -> not allowed fields/
+        const allowedFields = ["name", "price", "description"]
 
-        const response = await itemsService.updateItem(newItemData.id, userId, newItemData)
+        const sanitized = Object.fromEntries(
+            Object.entries(newItemData).filter(([k]) => allowedFields.includes(k))
+        )
+
+        const response = await itemsService.updateItem(itemId, userId, sanitized)
 
         res.status(200).json(response)
     }
