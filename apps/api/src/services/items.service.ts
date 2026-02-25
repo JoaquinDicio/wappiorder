@@ -34,7 +34,21 @@ const itemsService = {
         return { deleted: true }
     },
 
-    async updateItem(itemId: string, userId: string) { },
+    async updateItem(itemId: string, userId: string, newItemData: Partial<ItemDTO>) {
+
+        const { data, error } = await supabase
+            .from('items')
+            .update(newItemData)
+            .eq('user_id', userId)
+            .eq('item_id', itemId)
+            .select()
+
+        if (error) throw new HttpError(500, error.message, error)
+
+        if (data.length == 0) throw new HttpError(404, "No se ha encontrado ningun item perteneciente al usuario.")
+
+        return data
+    },
 
     async getItems(storeId: string) {
 
@@ -46,7 +60,7 @@ const itemsService = {
         if (error) throw new HttpError(500, error.message, error)
 
         return data
-    }
+    },
 
 }
 

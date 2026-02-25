@@ -44,7 +44,16 @@ const itemsController = {
     },
 
     async updateItem (req:Request, res:Response){
-        res.status(200).json({msg:"Endpoint is working"})
+
+        const { newItemData } = req.body
+
+        const userId = req.user!.id
+
+        //TODO-> ADD SOME VALIDATIONS TO THIS.
+
+        const response = await itemsService.updateItem(newItemData.id, userId, newItemData)
+
+        res.status(200).json(response)
     }
 }
 
