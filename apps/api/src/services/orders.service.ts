@@ -2,22 +2,28 @@ import newOrderDTO from "../types/order.interface.js"
 import HttpError from "../errors/httpError.js"
 import supabase from "../db/supabase.js"
 import { ORDER_STATES, OrderStateKey } from "../consts/orderStates.js"
+import orderItemService from "./orderItem.service.js"
 
 const ordersService = {
 
     async createNewOrder(newOrder: newOrderDTO) {
 
-        const { clientName, clientPhone, paymentMethod, storeId } = newOrder
+        const { clientName, clientPhone, paymentMethod, storeId, items } = newOrder
+
+        if (!items || items.length == 0) throw new HttpError(400, "No se puede guardar una orden sin items.")
 
         newOrder.state = ORDER_STATES.PREPARING
 
-        // TODO>> Buscar una mejor forma de evitar que ingrese cualquier cosa a la DB
         const { data, error } = await supabase
             .from("orders")
             .insert({ clientName, clientPhone, paymentMethod, state: newOrder.state, store_id: storeId, subtotal: 0 })
-            .select();
+            .select().single()
 
         if (error) throw new HttpError(500, error.message, error)
+
+        await orderItemService.saveItems(items, data.order_id)
+
+        //TODO-> Update subtotal based on saved orderItems
 
         return data
     },

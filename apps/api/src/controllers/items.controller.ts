@@ -1,12 +1,12 @@
-import { Request, response, Response } from 'express'
+import { Request, Response } from 'express'
 import checkMissingFields from '../utils/checkMissingFields.js'
 import HttpError from '../errors/httpError.js'
 import itemsService from '../services/items.service.js'
 import ItemDTO from '../types/item.interface.js'
 
 const itemsController = {
-    
-    async getItems (req: Request, res: Response) {
+
+    async getItems(req: Request, res: Response) {
 
         const { userId } = req.params as { userId: string }
 
@@ -26,7 +26,7 @@ const itemsController = {
         res.status(200).json(response)
     },
 
-    async createItem (req:Request, res: Response) {
+    async createItem(req: Request, res: Response) {
 
         const newItem: ItemDTO = req.body
 
