@@ -21,11 +21,18 @@ const ordersService = {
 
         if (error) throw new HttpError(500, error.message, error)
 
-        await orderItemService.saveItems(items, data.order_id)
+        const orderItems = await orderItemService.saveItems(items, data.order_id)
 
-        //TODO-> Update subtotal based on saved orderItems
+        const subtotal = orderItems.reduce((acc, i) => acc + (i.quantity * i.price), 0)
 
-        return data
+        // inserts subtotal from order_items calc
+        const { data: order } = await supabase
+            .from('orders')
+            .update({ subtotal: subtotal })
+            .eq('order_id', data.order_id)
+            .select()
+
+        return order
     },
 
     async updateOrderState(orderId: string, newState: OrderStateKey, userId: string) {

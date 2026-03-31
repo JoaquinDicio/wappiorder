@@ -39,7 +39,7 @@ const orderItemService = {
 
         if (insertError) throw new HttpError(500, insertError.message, insertError)
 
-        return { ok: true }
+        return orderItems
     }
 }
 
